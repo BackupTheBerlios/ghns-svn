@@ -19,7 +19,7 @@ and you? :-)
 <h2>Contact the GHNS Project</h2>
 <p>
 The easiest way to contact us or to participate is to join the main
-<a href="ghns-discuss@lists.berlios.de">mailing list</a>. Don't hesitate to tell us about your
+<a href="mailto:ghns-discuss@lists.berlios.de">mailing list</a>. Don't hesitate to tell us about your
 exciting new plans, implementations for other desktops or successful
 GHNS-enabled data repositories.
 </p>
