@@ -18,7 +18,7 @@
 <div>
 <ul class="navbar">
 <li><a href="/" class="nav">Home</a></li>
-<li><a href="/software.php" class="nav">Specs & Software</a></li>
+<li><a href="/software.php" class="nav">Specs &amp; Software</a></li>
 <li><a href="/sites.php" class="nav">GHNS Sites</a></li>
 <li><a href="/contact.php" class="nav">Contact</a></li>
 </ul>
