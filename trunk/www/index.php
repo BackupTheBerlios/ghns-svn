@@ -38,7 +38,7 @@ on the client, the server and the protocols in between.
 
 <h2>(07.06.2005) Newsflash: Desktop Exchange Service (DXS)</h2>
 <p>
-Based on an idea by <a href="contact.html">Michael Gebhart</a>, GHNS should also be accessible
+Based on an idea by <a href="contact.php">Michael Gebhart</a>, GHNS should also be accessible
 as a webservice. The Desktop Exchange Service works similar to "traditional" uploads
 and downloads, except that all data is embedded in a single SOAP message. The first implementation
 is available thanks to the SOAP::Lite Perl module. Further work on finding a suitable format
