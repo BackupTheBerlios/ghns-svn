@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ghnsdownload SYSTEM "ghnsdownload.dtd">
+<ghnsdownload>
+  <stuff type="app/media">
+    <name lang="en">Some Name</name>
+    <author email="some_guy@some.mail.server">Anonymous Guy</author>
+    <licence agreement="gpl">LicenceKey</licence>
+    <summary lang="en">This is what it is all about.</summary>
+    <version>1.0</version>
+    <release>1</release>
+    <releasedate>2005-06-17</releasedate>
+    <preview lang="en">http://some.http.server/preview.png</preview>
+    <payload lang="en">http://some.http.server/coolstuff.tar.gz</payload>
+    <rating>10</rating>
+    <downloads>0</downloads>
+  </stuff>
+</ghnsdownload>

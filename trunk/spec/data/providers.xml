@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ghnsproviders SYSTEM "ghnsproviders.dtd">
+<ghnsproviders>
+  <provider downloadurl="http://some.http.server/stuff.xml"
+            uploadurl="ftp://somewhere.ftp.server"
+            webservice="http://some.http.server/service.wsdl"
+            icon="someapp"
+            webaccess="http://some.webfrontend.server/">
+    <title>Some cool stuff</title>
+    <title lang="de">Viele neue Dinge</title>
+  </provider>
+</ghnsproviders>
