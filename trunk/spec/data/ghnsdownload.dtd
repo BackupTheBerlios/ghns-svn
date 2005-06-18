@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!ELEMENT ghnsdownload (stuff*)>
+
 <!ELEMENT stuff (name*,author,licence,summary*,version,release,releasedate,
-                 preview*,payload*,rating?,downloads?)>
+                 preview*,payload*,options?,rating?,downloads?)>
   <!ATTLIST stuff type CDATA #IMPLIED>
+  <!ATTLIST stuff xmlns:option CDATA #IMPLIED>
 
 <!ELEMENT name (#PCDATA)>
   <!ATTLIST name lang CDATA #IMPLIED>
@@ -31,6 +33,8 @@
 
 <!ELEMENT payload (#PCDATA)>
   <!ATTLIST payload lang CDATA #REQUIRED>
+
+<!ELEMENT options (#PCDATA)>
 
 <!ELEMENT rating (#PCDATA)>
 
