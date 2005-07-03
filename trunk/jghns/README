@@ -1,0 +1,17 @@
+jGHNS - Get Hot New Stuff for Java
+==================================
+Homepage: http://kstuff.org/ghns/?p=jghns
+Author: Josef Spillner <josef@kstuff.org>
+Version: 2005-07-03
+Status: pre-alpha
+Licence: GNU GPL
+
+The "Get Hot New Stuff" concept allows users to share their
+creations with other users. Information about GHNS can be
+found at http://ghns.freedesktop.org/.
+
+The jGHNS library implements this concept in Java. Run 'make'
+to build the library and a little test programme.
+
+This requires jikes and kaffe to be installed.
+
