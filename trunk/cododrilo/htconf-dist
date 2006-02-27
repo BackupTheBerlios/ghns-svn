@@ -1,8 +1,18 @@
 <?php
+
+# Database account data
 $conf_host = "localhost";
 $conf_name = "hotstuff";
 $conf_user = "xxx";
 $conf_pass = "xxx";
 
+# Category filter (empty for all categories)
+$conf_category = "";
+
+# Entries per page (10 by default)
+$conf_entriesperpage = 10;
+
+# Theme to use
 $conf_theme = "dxsweb";
+
 ?>

@@ -74,7 +74,9 @@ class CocodriloGHNS
 	{
 		include(".htconf");
 
-		$this->conn = pg_connect("host=$conf_host dbname=$conf_name user=$conf_user password=$conf_pass");
+		$this->conn = @pg_connect("host=$conf_host dbname=$conf_name user=$conf_user password=$conf_pass");
+
+		return $this->conn;
 	}
 
 	function autoselect($var, $type, $lang)
@@ -116,7 +118,19 @@ class CocodriloGHNS
 		if ($author) :
 			$filter .= " AND author = '$author'";
 		endif;
-		$query = "SELECT * FROM directory WHERE (validity = '' OR validity IS NULL) $filter";
+		if ($category) :
+			$filter .= " AND category = '$category'";
+		endif;
+		if ($searchterm) :
+			$filter .= " AND summary_ref IN " .
+				"(SELECT index FROM contents WHERE type = 'summary' " .
+				"AND content LIKE '%$searchterm%')";
+		endif;
+		if ($max) :
+			$filter .= " LIMIT $max";
+		endif;
+		$query = "SELECT * FROM directory " .
+			"WHERE (validity = '' OR validity IS NULL) $filter";
 		$res = pg_exec($this->conn, $query);
 
 		$this->entries = array();
@@ -171,7 +185,23 @@ class CocodriloTemplate
 
 	function substitute_entry($contents, $e)
 	{
-		$previewfile = "directory/" . $e->category . "/" . $e->preview;
+		if ($e->preview) :
+			$previewfile = "directory/" . $e->category . "/" . $e->preview;
+		else :
+			$previewfile = "";
+		endif;
+
+		if ($e->downloads) :
+			$downloads = $e->downloads;
+		else :
+			$downloads = "(none yet)";
+		endif;
+
+		if ($e->rating) :
+			$rating = $e->rating;
+		else :
+			$rating = "(not yet rated)";
+		endif;
 
 		$tmp = $contents;
 		$tmp = preg_replace("/%AUTHOR%/", $e->author, $tmp);
@@ -183,8 +213,8 @@ class CocodriloTemplate
 		$tmp = preg_replace("/%CATEGORY%/", $e->category, $tmp);
 		$tmp = preg_replace("/%DOWNLOAD%/", $e->payload, $tmp);
 		$tmp = preg_replace("/%PREVIEW%/", $previewfile, $tmp);
-		$tmp = preg_replace("/%DOWNLOADS%/", $e->downloads, $tmp);
-		$tmp = preg_replace("/%RATING%/", $e->rating, $tmp);
+		$tmp = preg_replace("/%DOWNLOADS%/", $downloads, $tmp);
+		$tmp = preg_replace("/%RATING%/", $rating, $tmp);
 		$tmp = preg_replace("/%LICENCE%/", $e->licence, $tmp);
 		$tmp = preg_replace("/%ID%/", $e->id, $tmp);
 		$tmp = preg_replace("/%LANGUAGES%/", $e->get_languages(), $tmp);
