@@ -1,5 +1,21 @@
 <?php
 
+function xmlvalue($tag)
+{
+	if (!$tag->children) :
+		return "";
+	endif;
+
+	foreach ($tag->children as $child)
+	{
+		if ($child->type == XML_TEXT_NODE) :
+			return $child->content;
+		endif;
+	}
+
+	return "";
+}
+
 class CocodriloEntry
 {
 	var $id;
@@ -167,6 +183,88 @@ class CocodriloGHNS
 
 			$this->entries[] = $e;
 		}
+	}
+
+	function fetch($feed)
+	{
+		$f = fopen($feed, "r");
+		if (!$f) :
+			return false;
+		endif;
+
+		$text = "";
+		while (!feof($f))
+		{
+			$line = fgets($f, 1024);
+			$text .= $line;
+		}
+		fclose($f);
+
+		#echo htmlspecialchars($text);
+		#echo "-------------<br>\n";
+
+		$tree = @domxml_xmltree($text);
+		if (!$tree) :
+			return false;
+		endif;
+
+		$root = $tree->children[1];
+		#print_r($root);
+		foreach ($root->children as $child)
+		{
+			if ($child->type != XML_ELEMENT_NODE) :
+				continue;
+			endif;
+
+			if ($child->tagname == "stuff") :
+				#print_r($child);
+				#echo "<br>+++++<br>\n";
+				$e = new CocodriloEntry();
+				$e->id = -1;
+
+				foreach ($child->children as $tag)
+				{
+					if ($tag->type != XML_ELEMENT_NODE) :
+						continue;
+					endif;
+
+					#print_r($tag);
+					#echo "<br>+++++<br>\n";
+					if ($tag->tagname == "name") :
+						$e->name = xmlvalue($tag);
+					elseif ($tag->tagname == "version") :
+						$e->version = xmlvalue($tag);
+					elseif ($tag->tagname == "author") :
+						$e->author = xmlvalue($tag);
+					elseif ($tag->tagname == "releasedate") :
+						$e->releasedate = xmlvalue($tag);
+					elseif ($tag->tagname == "release") :
+						$e->release = xmlvalue($tag);
+					elseif ($tag->tagname == "licence") :
+						$e->licence= xmlvalue($tag);
+					elseif ($tag->tagname == "rating") :
+						$e->rating = xmlvalue($tag);
+					elseif ($tag->tagname == "downloads") :
+						$e->downloads = xmlvalue($tag);
+					elseif ($tag->tagname == "category") :
+						# FIXME: is attribute!
+						$e->category = xmlvalue($tag);
+					elseif ($tag->tagname == "summary") :
+						$e->summary = xmlvalue($tag);
+					elseif ($tag->tagname == "payload") :
+						$e->payload = xmlvalue($tag);
+					elseif ($tag->tagname == "preview") :
+						$e->preview = xmlvalue($tag);
+					endif;
+				}
+
+				$e->summaries = array();
+
+				$this->entries[] = $e;
+			endif;
+		}
+
+		return true;
 	}
 
 	function get()

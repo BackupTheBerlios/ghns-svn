@@ -10,14 +10,16 @@ endif;
 
 $theme = $conf_theme;
 
-ob_start(); 
-$ret = @readfile("$theme/index.tmpl");
-$contents_index = ob_get_contents(); 
-ob_end_clean(); 
+if (!$conf_embedded) :
+	ob_start(); 
+	$ret = @readfile("$theme/index.tmpl");
+	$contents_index = ob_get_contents(); 
+	ob_end_clean(); 
 
-if (!$ret) :
-	echo "Cocodrilo could not load the template file $theme/index.tmpl.\n";
-	exit;
+	if (!$ret) :
+		echo "Cocodrilo could not load the template file $theme/index.tmpl.\n";
+		exit;
+	endif;
 endif;
 
 ob_start(); 
@@ -33,47 +35,63 @@ endif;
 include("cocodrilo.php");
 
 $c = new CocodriloGHNS();
-$ret = $c->connect();
 
-if (!$ret) :
-	echo "Cocodrilo was unable to connect to the database.\n";
-	exit;
-endif;
+if ($conf_feed) :
+	$ret = $c->fetch($conf_feed);
 
-if ($conf_category) :
-	$filter_category = $conf_category;
+	if (!$ret) :
+		echo "Cocodrilo was unable to fetch the feed.\n";
+		exit;
+	endif;
 else :
-	$filter_category = $_GET["filter_category"];
+	$ret = $c->connect();
+
+	if (!$ret) :
+		echo "Cocodrilo was unable to connect to the database.\n";
+		exit;
+	endif;
 endif;
 
-$filter_author = $_GET["filter_author"];
+if (!$conf_feed) :
+	if ($conf_category) :
+		$filter_category = $conf_category;
+	else :
+		$filter_category = $_GET["filter_category"];
+	endif;
 
-if ($conf_entriesperpage) :
-	$entriesperpage = $conf_entriesperpage;
-else :
-	$entriesperpage = 10;
+	$filter_author = $_GET["filter_author"];
+
+	if ($conf_entriesperpage) :
+		$entriesperpage = $conf_entriesperpage;
+	else :
+		$entriesperpage = 10;
+	endif;
+
+	$filter_search = $_POST["q"];
+
+	$c->load($filter_search, $filter_category, $filter_author, null, $entriesperpage);
 endif;
-
-$filter_search = $_POST["q"];
-
-$c->load($filter_search, $filter_category, $filter_author, null, $entriesperpage);
-$list = $c->entries;
 
 $r = new CocodriloTemplate();
 
-foreach ($list as $e)
-{
-	$entrylist .= $r->substitute_entry($contents_entry, $e);
-}
-
+$list = $c->entries;
 if (sizeof($list) == 0) :
 	$entrylist = "No entries found.";
+else :
+	foreach ($list as $e)
+	{
+		$entrylist .= $r->substitute_entry($contents_entry, $e);
+	}
 endif;
 
-$contents_index = preg_replace("/%ENTRY_LIST%/", $entrylist, $contents_index);
+if (!$conf_embedded) :
+	$contents_index = preg_replace("/%ENTRY_LIST%/", $entrylist, $contents_index);
 
-$contents_index = preg_replace("/%SEARCH_URL%/", "index.php", $contents_index);
+	$contents_index = preg_replace("/%SEARCH_URL%/", "index.php", $contents_index);
 
-echo $contents_index;
+	echo $contents_index;
+else :
+	echo $entrylist;
+endif;
 
 ?>

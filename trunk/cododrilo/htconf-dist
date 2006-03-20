@@ -1,10 +1,13 @@
 <?php
 
-# Database account data
+# Database account data (only used if feed URL is not set)
 $conf_host = "localhost";
 $conf_name = "hotstuff";
 $conf_user = "xxx";
 $conf_pass = "xxx";
+
+# Feed URL
+#$conf_feed = "http://localhost/stuff.xml";
 
 # Category filter (empty for all categories)
 $conf_category = "";
@@ -14,5 +17,8 @@ $conf_entriesperpage = 10;
 
 # Theme to use
 $conf_theme = "dxsweb";
+
+# In embedded mode, Cocodrilo can be used in other web frameworks
+$conf_embedded = false;
 
 ?>
