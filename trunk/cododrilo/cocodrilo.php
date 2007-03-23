@@ -2,18 +2,26 @@
 
 function xmlvalue($tag)
 {
-	if (!$tag->children) :
-		return "";
-	endif;
+	##if (!$tag->children) :
+	##	return "";
+	##endif;
 
-	foreach ($tag->children as $child)
-	{
-		if ($child->type == XML_TEXT_NODE) :
-			return $child->content;
-		endif;
-	}
+	return $tag->textContent;
+	
+	##foreach ($tag->children as $child)
+	##{
+	##	if ($child->type == XML_TEXT_NODE) :
+	##		return $child->content;
+	##	endif;
+	##}
 
-	return "";
+	##return "";
+}
+
+function xmlname($tag)
+{
+	##return $tag->tagname;
+	return $tag->tagName;
 }
 
 class CocodriloEntry
@@ -138,7 +146,7 @@ class CocodriloGHNS
 			$filter .= " AND category = '$category'";
 		endif;
 		if ($searchterm) :
-			$filter .= " AND summary_ref IN " .
+			$filter .= " AND meta_ref IN " .
 				"(SELECT index FROM contents WHERE type = 'summary' " .
 				"AND content LIKE '%$searchterm%')";
 		endif;
@@ -168,18 +176,16 @@ class CocodriloGHNS
 			$e->downloads = pg_result($res, $i, "downloads");
 			$e->category = pg_result($res, $i, "category");
 
-			$summaryref = pg_result($res, $i, "summary_ref");
-			$payloadref = pg_result($res, $i, "payload_ref");
-			$previewref = pg_result($res, $i, "preview_ref");
+			$metaref = pg_result($res, $i, "meta_ref");
 
 			$lang = "de";
-			$e->summary = $this->autoselect($summaryref, "summary", $lang);
-			$e->payload = $this->autoselect($payloadref, "payload", $lang);
-			$e->preview = $this->autoselect($previewref, "preview", $lang);
+			$e->summary = $this->autoselect($metaref, "summary", $lang);
+			$e->payload = $this->autoselect($metaref, "payload", $lang);
+			$e->preview = $this->autoselect($metaref, "preview", $lang);
 
-			$e->summaries = $this->multiple($summaryref, "summary");
-			$e->payloads = $this->multiple($payloadref, "payload");
-			$e->previews = $this->multiple($previewref, "preview");
+			$e->summaries = $this->multiple($metaref, "summary");
+			$e->payloads = $this->multiple($metaref, "payload");
+			$e->previews = $this->multiple($metaref, "preview");
 
 			$this->entries[] = $e;
 		}
@@ -203,57 +209,67 @@ class CocodriloGHNS
 		#echo htmlspecialchars($text);
 		#echo "-------------<br>\n";
 
-		$tree = @domxml_xmltree($text);
-		if (!$tree) :
+		##$tree = @domxml_xmltree($text);
+		##if (!$tree) :
+		##	return false;
+		##endif;
+		$doc = new DomDocument();
+		$ret = $doc->loadXML($text);
+		if (!$ret) :
 			return false;
 		endif;
 
-		$root = $tree->children[1];
+		$list = $doc->getElementsByTagName("stuff");
+		##$root = $tree->children[1];
 		#print_r($root);
-		foreach ($root->children as $child)
+		foreach ($list as $child)
+		##foreach ($root->children as $child)
 		{
-			if ($child->type != XML_ELEMENT_NODE) :
-				continue;
-			endif;
+			##if ($child->type != XML_ELEMENT_NODE) :
+			##	continue;
+			##endif;
 
-			if ($child->tagname == "stuff") :
+			if(true) :
+			##if ($child->tagname == "stuff") :
 				#print_r($child);
 				#echo "<br>+++++<br>\n";
 				$e = new CocodriloEntry();
 				$e->id = -1;
 
-				foreach ($child->children as $tag)
+				$childlist = $child->getElementsByTagName("*");
+				foreach ($childlist as $tag)
+				##foreach ($child->children as $tag)
 				{
-					if ($tag->type != XML_ELEMENT_NODE) :
-						continue;
-					endif;
+					##if ($tag->type != XML_ELEMENT_NODE) :
+					##	continue;
+					##endif;
 
 					#print_r($tag);
 					#echo "<br>+++++<br>\n";
-					if ($tag->tagname == "name") :
+					if (xmlname($tag) == "name") :
 						$e->name = xmlvalue($tag);
-					elseif ($tag->tagname == "version") :
+					elseif (xmlname($tag) == "version") :
 						$e->version = xmlvalue($tag);
-					elseif ($tag->tagname == "author") :
+					elseif (xmlname($tag) == "author") :
 						$e->author = xmlvalue($tag);
-					elseif ($tag->tagname == "releasedate") :
+					elseif (xmlname($tag) == "releasedate") :
 						$e->releasedate = xmlvalue($tag);
-					elseif ($tag->tagname == "release") :
+					elseif (xmlname($tag) == "release") :
 						$e->release = xmlvalue($tag);
-					elseif ($tag->tagname == "licence") :
+					elseif (xmlname($tag) == "licence") :
 						$e->licence= xmlvalue($tag);
-					elseif ($tag->tagname == "rating") :
+					elseif (xmlname($tag) == "rating") :
 						$e->rating = xmlvalue($tag);
-					elseif ($tag->tagname == "downloads") :
+					elseif (xmlname($tag) == "downloads") :
 						$e->downloads = xmlvalue($tag);
-					elseif ($tag->tagname == "category") :
+					elseif (xmlname($tag) == "category") :
 						# FIXME: is attribute!
 						$e->category = xmlvalue($tag);
-					elseif ($tag->tagname == "summary") :
+					elseif (xmlname($tag) == "summary") :
 						$e->summary = xmlvalue($tag);
-					elseif ($tag->tagname == "payload") :
+					elseif (xmlname($tag) == "payload") :
 						$e->payload = xmlvalue($tag);
-					elseif ($tag->tagname == "preview") :
+					elseif (xmlname($tag) == "preview") :
 						$e->preview = xmlvalue($tag);
 					endif;
 				}
@@ -340,4 +356,3 @@ class CocodriloTemplate
 
 
 ?>
-
